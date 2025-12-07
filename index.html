@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TutorHub - Platform Tutoring Mahasiswa</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/introjs.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Demo Badge -->
+    <div class="demo-badge" id="demo-badge" style="display: none;">
+        <i class="fas fa-flask"></i> DEMO MODE
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg sticky-top" data-intro="Ini adalah navigasi utama TutorHub" data-step="1">
+        <div class="container">
+            <a class="navbar-brand" href="#" onclick="showPage('landing')">
+                <i class="fas fa-graduation-cap"></i> TutorHub
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item" id="nav-home">
+                        <a class="nav-link" href="#" onclick="showPage('landing')">Beranda</a>
+                    </li>
+                    <li class="nav-item" id="nav-search" style="display:none;" data-intro="Cari tutor berdasarkan mata kuliah dan filter lainnya" data-step="2">
+                        <a class="nav-link" href="#" onclick="showPage('search')">Cari Tutor</a>
+                    </li>
+                    <li class="nav-item" id="nav-sessions" style="display:none;" data-intro="Kelola jadwal sesi tutoring Anda" data-step="3">
+                        <a class="nav-link" href="#" onclick="showPage('sessions')">Sesi Saya</a>
+                    </li>
+                    <li class="nav-item" id="nav-profile" style="display:none;" data-intro="Lihat profil dan statistik pembelajaran" data-step="4">
+                        <a class="nav-link" href="#" onclick="showPage('profile')">Profil</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="startTour()">
+                            <i class="fas fa-question-circle"></i> Demo Tour
+                        </a>
+                    </li>
+                    <li class="nav-item" id="nav-login">
+                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">
+                            <i class="fas fa-sign-in-alt"></i> Login
+                        </a>
+                    </li>
+                    <li class="nav-item" id="nav-logout" style="display:none;">
+                        <a class="nav-link" href="#" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Landing Page -->
+    <div id="landing-page" class="page-content active">
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-6">
+                        <h1 class="hero-title">Belajar Langsung dari Senior Terpercaya</h1>
+                        <p class="hero-subtitle">Platform tutoring yang menghubungkan mahasiswa dengan senior berpengalaman. Tingkatkan nilai akademikmu dengan bimbingan personal!</p>
+                        <div class="d-flex gap-3">
+                            <button class="btn-primary-custom" data-bs-toggle="modal" data-bs-target="#loginModal">
+                                Mulai Belajar
+                            </button>
+                            <button class="btn-outline-custom" data-bs-toggle="modal" data-bs-target="#registerModal">
+                                Daftar
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 text-center">
+                        <i class="fas fa-chalkboard-teacher" style="font-size: 15rem; opacity: 0.2;"></i>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section class="stats-section">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <div class="stat-number">500+</div>
+                            <div class="stat-label">Tutor Berpengalaman</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <div class="stat-number">10K+</div>
+                            <div class="stat-label">Sesi Tutoring</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <div class="stat-number">4.8/5</div>
+                            <div class="stat-label">Rating Rata-rata</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="py-5">
+            <div class="container">
+                <div class="text-center mb-5">
+                    <h2 class="display-5 fw-bold">Mengapa Memilih TutorHub?</h2>
+                    <p class="lead text-muted">Solusi lengkap untuk kebutuhan belajar mahasiswa</p>
+                </div>
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-user-shield"></i>
+                            </div>
+                            <h4>Tutor Terverifikasi</h4>
+                            <p class="text-muted">Semua tutor telah melalui proses verifikasi dan memiliki rekam jejak akademik yang baik</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <h4>Pembayaran Aman</h4>
+                            <p class="text-muted">Sistem escrow yang aman, dana hanya diteruskan setelah sesi selesai</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                            <h4>Jadwal Fleksibel</h4>
+                            <p class="text-muted">Pilih waktu yang sesuai dengan jadwalmu, online atau offline</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Search Page -->
+    <div id="search-page" class="page-content">
+        <section class="py-5 bg-light">
+            <div class="container">
+                <h2 class="mb-4">Cari Tutor</h2>
+                <div class="row">
+                    <div class="col-lg-3">
+                        <div class="filter-sidebar" data-intro="Gunakan filter untuk mencari tutor sesuai kebutuhan" data-step="5">
+                            <h5 class="mb-3">Filter</h5>
+                            <div class="mb-3">
+                                <label class="form-label">Mata Kuliah</label>
+                                <input type="text" id="filter-subject" class="form-control" placeholder="Cari mata kuliah...">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Universitas</label>
+                                <select class="form-select" id="filter-university">
+                                    <option value="">Semua Universitas</option>
+                                    <option value="Universitas Indonesia">Universitas Indonesia</option>
+                                    <option value="ITB">ITB</option>
+                                    <option value="UGM">UGM</option>
+                                    <option value="ITS">ITS</option>
+                                    <option value="UNAIR">UNAIR</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Rating Minimum</label>
+                                <select class="form-select" id="filter-rating">
+                                    <option value="">Semua Rating</option>
+                                    <option value="4.5">4.5+ Bintang</option>
+                                    <option value="4">4+ Bintang</option>
+                                    <option value="3">3+ Bintang</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Harga per Sesi</label>
+                                <input type="range" class="form-range" id="filter-price" min="0" max="500000" step="50000" value="500000">
+                                <small class="text-muted">Rp 0 - Rp <span id="price-display">500.000</span></small>
+                            </div>
+                            <button class="btn btn-primary w-100 mb-2" onclick="applyFilters()">Terapkan Filter</button>
+                            <button class="btn btn-outline-secondary w-100" onclick="resetFilters()">Reset</button>
+                        </div>
+                    </div>
+                    <div class="col-lg-9">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <p class="text-muted mb-0">Menampilkan <span id="tutor-count">0</span> tutor</p>
+                            <select class="form-select w-auto" id="sort-select" onchange="sortTutors()">
+                                <option value="rating">Urutkan: Rating Tertinggi</option>
+                                <option value="price-low">Urutkan: Harga Terendah</option>
+                                <option value="price-high">Urutkan: Harga Tertinggi</option>
+                                <option value="sessions">Urutkan: Terbanyak Sesi</option>
+                            </select>
+                        </div>
+                        <div class="row" id="tutor-list" data-intro="Daftar tutor akan tampil di sini" data-step="6">
+                            <!-- Tutor cards will be generated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <!-- Profile Page -->
+    <div id="profile-page" class="page-content">
+        <section class="py-5">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <img src="https://ui-avatars.com/api/?name=User&size=150" class="rounded-circle mb-3" alt="Profile" id="profile-avatar">
+                                <h4 id="profile-name">User Name</h4>
+                                <p class="text-muted" id="profile-university">Universitas</p>
+                                <p class="text-muted" id="profile-email">email@university.ac.id</p>
+                                <p class="text-muted"><i class="fas fa-id-card"></i> NIM: <span id="profile-nim">-</span></p>
+                                <button class="btn btn-primary w-100 mb-2" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                                    <i class="fas fa-edit"></i> Edit Profil
+                                </button>
+                                <button class="btn btn-outline-warning w-100" onclick="populateSampleData()">
+                                    <i class="fas fa-database"></i> Load Sample Data
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-8">
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h5 class="mb-0">Statistik</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row text-center">
+                                    <div class="col-md-4">
+                                        <h3 class="text-primary" id="stats-sessions">0</h3>
+                                        <p class="text-muted">Total Sesi</p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <h3 class="text-success" id="stats-completed">0</h3>
+                                        <p class="text-muted">Sesi Selesai</p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <h3 class="text-warning" id="stats-pending">0</h3>
+                                        <p class="text-muted">Sesi Pending</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Riwayat Sesi</h5>
+                            </div>
+                            <div class="card-body" id="profile-sessions">
+                                <p class="text-muted">Belum ada riwayat sesi</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <!-- Sessions Page -->
+    <div id="sessions-page" class="page-content">
+        <section class="py-5">
+            <div class="container">
+                <h2 class="mb-4">Sesi Saya</h2>
+                <ul class="nav nav-tabs mb-4">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-bs-toggle="tab" href="#upcoming">Mendatang</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="tab" href="#history">Riwayat</a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="upcoming">
+                        <div id="upcoming-sessions">
+                            <p class="text-muted">Belum ada sesi mendatang</p>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="history">
+                        <div id="history-sessions">
+                            <p class="text-muted">Belum ada riwayat sesi</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5><i class="fas fa-graduation-cap"></i> TutorHub</h5>
+                    <p class="text-muted">Platform tutoring terpercaya untuk mahasiswa Indonesia</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Link Cepat</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-white-50">Tentang Kami</a></li>
+                        <li><a href="#" class="text-white-50">Cara Kerja</a></li>
+                        <li><a href="#" class="text-white-50">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Kontak</h5>
+                    <p class="text-muted">
+                        <i class="fas fa-envelope"></i> support@tutorhub.ac.id<br>
+                        <i class="fas fa-phone"></i> +62 811-268-5577
+                    </p>
+                </div>
+            </div>
+            <hr class="bg-secondary">
+            <div class="text-center text-muted">
+                <p>&copy; 2024 TutorHub. All rights reserved. | Demo Version for Academic Presentation</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Login Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Login</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="loginForm">
+                        <div class="mb-3">
+                            <label class="form-label">Email Universitas</label>
+                            <input type="email" name="email" class="form-control" placeholder="nama@university.ac.id" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <input type="password" name="password" class="form-control" placeholder="Masukkan password" required>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="rememberMe">
+                            <label class="form-check-label" for="rememberMe">Ingat saya</label>
+                        </div>
+                        <button type="submit" class="btn-login">Login</button>
+                    </form>
+                    
+                    <hr class="my-4">
+                    <div class="text-center">
+                        <p class="text-muted small mb-3"><i class="fas fa-flask"></i> Demo Quick Login:</p>
+                        <div class="d-flex gap-2 justify-content-center flex-wrap">
+                            <button type="button" class="btn btn-outline-primary quick-login-btn" onclick="quickLogin('student')">
+                                <i class="fas fa-user"></i> Login as Student
+                            </button>
+                            <button type="button" class="btn btn-outline-success quick-login-btn" onclick="quickLogin('tutor')">
+                                <i class="fas fa-chalkboard-teacher"></i> Login as Tutor
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mt-3">
+                        <small>Belum punya akun? <a href="#" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#registerModal">Daftar sekarang</a></small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div class="modal fade" id="registerModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Registrasi</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="registerForm">
+                        <div class="mb-3">
+                            <label class="form-label">Nama Lengkap</label>
+                            <input type="text" name="name" class="form-control" placeholder="Nama lengkap" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email Universitas</label>
+                            <input type="email" name="email" class="form-control" placeholder="nama@university.ac.id" required>
+                            <small class="text-muted">Harus menggunakan email universitas (.ac.id)</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">NIM/NPM</label>
+                            <input type="text" name="nim" class="form-control" placeholder="Nomor induk mahasiswa" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Universitas</label>
+                            <input type="text" name="university" class="form-control" placeholder="Nama universitas" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <input type="password" name="password" class="form-control" placeholder="Minimal 8 karakter" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Konfirmasi Password</label>
+                            <input type="password" name="password_confirm" class="form-control" placeholder="Ulangi password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Daftar sebagai</label>
+                            <select class="form-select" name="role" required>
+                                <option value="">Pilih tipe akun</option>
+                                <option value="student">Mahasiswa (Student)</option>
+                                <option value="tutor">Tutor (Senior)</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn-login">Daftar</button>
+                    </form>
+                    <div class="text-center mt-3">
+                        <small>Sudah punya akun? <a href="#" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#loginModal">Login</a></small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tutor Detail Modal -->
+    <div class="modal fade" id="tutorDetailModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Detail Tutor</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-4 text-center">
+                            <img src="" id="detail-avatar" class="tutor-detail-avatar mb-3" alt="Tutor">
+                            <h4 id="detail-name">Tutor Name</h4>
+                            <p class="text-muted" id="detail-university">Universitas</p>
+                            <div class="rating-stars mb-2">
+                                <i class="fas fa-star"></i> <span id="detail-rating">0</span> (<span id="detail-reviews">0</span> review)
+                            </div>
+                            <p class="text-muted"><span id="detail-sessions">0</span> sesi selesai</p>
+                        </div>
+                        <div class="col-md-8">
+                            <h5>Keahlian</h5>
+                            <div class="mb-3">
+                                <span class="badge bg-primary me-2" id="detail-subject">Mata Kuliah</span>
+                            </div>
+                            <h5>Dosen</h5>
+                            <p class="text-muted" id="detail-lecturer">Prof. Nama Dosen</p>
+                            <h5>Harga</h5>
+                            <p class="price-display" id="detail-price">Rp 0</p>
+                            <h5>Bio</h5>
+                            <p class="text-muted" id="detail-bio">Deskripsi tutor...</p>
+                            <hr>
+                            <button class="btn btn-primary btn-lg w-100" onclick="bookSession()">
+                                <i class="fas fa-calendar-check"></i> Book Sesi Sekarang
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking Modal -->
+    <div class="modal fade" id="bookingModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Book Sesi Tutoring</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="bookingForm">
+                        <input type="hidden" id="booking-tutor-id">
+                        <div class="mb-3">
+                            <label class="form-label">Tutor</label>
+                            <input type="text" id="booking-tutor-name" class="form-control" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Mata Kuliah</label>
+                            <input type="text" id="booking-subject" class="form-control" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Tanggal & Waktu Mulai</label>
+                            <input type="datetime-local" name="start_time" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Durasi (jam)</label>
+                            <select class="form-select" name="duration" id="booking-duration" onchange="updateBookingTotal()" required>
+                                <option value="1">1 Jam</option>
+                                <option value="1.5">1.5 Jam</option>
+                                <option value="2">2 Jam</option>
+                                <option value="3">3 Jam</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Metode</label>
+                            <select class="form-select" name="method" required>
+                                <option value="online">Online (Zoom/Meet)</option>
+                                <option value="offline">Offline (Kampus)</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Catatan (Opsional)</label>
+                            <textarea class="form-control" name="notes" rows="3" placeholder="Topik yang ingin dipelajari, persiapan khusus, dll."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Metode Pembayaran</label>
+                            <select class="form-select" name="payment_method" required>
+                                <option value="gopay">GoPay</option>
+                                <option value="ovo">OVO</option>
+                                <option value="bank_transfer">Transfer Bank</option>
+                                <option value="dana">DANA</option>
+                            </select>
+                        </div>
+                        <div class="alert alert-info">
+                            <strong>Total: Rp <span id="booking-total">0</span></strong>
+                        </div>
+                        <button type="submit" class="btn-login">Konfirmasi Booking</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal fade" id="editProfileModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Profil</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editProfileForm">
+                        <div class="mb-3">
+                            <label class="form-label">Nama Lengkap</label>
+                            <input type="text" name="name" id="edit-name" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="email" id="edit-email" class="form-control" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Universitas</label>
+                            <input type="text" name="university" id="edit-university" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">NIM/NPM</label>
+                            <input type="text" name="nim" id="edit-nim" class="form-control" required>
+                        </div>
+                        <button type="submit" class="btn-login">Simpan Perubahan</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/intro.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
