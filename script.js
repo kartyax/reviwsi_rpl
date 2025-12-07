@@ -117,7 +117,7 @@ async function loadProfileStats() {
             const statsContainer = document.querySelector('.card-body .row.text-center');
             if (statsContainer && !document.getElementById('stats-earnings')) {
                 const earningsCol = document.createElement('div');
-                earningsCol.className = 'col-md-3';
+                earningsCol.className = 'col-md-4';
                 earningsCol.innerHTML = `
                     <h3 class="text-success" id="stats-earnings">Rp ${result.stats.earnings.toLocaleString('id-ID')}</h3>
                     <p class="text-muted">Total Pendapatan</p>
@@ -350,6 +350,7 @@ function updateUIAfterLogin() {
     // Add user type badge
     updateUserTypeBadge();
 }
+
 
 // ===================================================
 // LOGOUT
