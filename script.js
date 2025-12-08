@@ -75,19 +75,28 @@ async function checkAuthAndInitialize() {
     if (result.success && result.authenticated) {
         currentUser = result.user;
         
-        // Redirect tutor to dashboard
-        if (currentUser.type === 'tutor') {
-            window.location.href = 'dashboard.html';
+        // Redirect based on user type if not on correct page
+        if (currentUser.type === 'admin') {
+            // Admin should be on admin.html
+            if (!window.location.pathname.includes('admin.html')) {
+                window.location.href = 'admin.html';
+            }
             return;
+        } else if (currentUser.type === 'tutor') {
+            // Tutor should be on dashboard.html
+            if (!window.location.pathname.includes('dashboard.html')) {
+                window.location.href = 'dashboard.html';
+            }
+            return;
+        } else {
+            // Student stays on index.html
+            updateUIAfterLogin();
+            document.getElementById('demo-badge').style.display = 'block';
+            showPage('search');
+            loadTutors();
         }
-        
-        // Student continues with normal flow
-        updateUIAfterLogin();
-        document.getElementById('demo-badge').style.display = 'block';
-        showPage('search');
-        loadTutors();
     } else {
-        // Not logged in, stay on landing page
+        // Not logged in - show landing page
         showPage('landing');
         loadTutors();
     }
@@ -224,19 +233,20 @@ async function quickLogin(type) {
     if (result.success) {
         currentUser = result.user;
         
-        // Redirect tutor to dashboard
-        if (type === 'tutor') {
+        // Redirect to appropriate page
+        if (type === 'admin') {
+            window.location.href = 'admin.html';
+        } else if (type === 'tutor') {
             window.location.href = 'dashboard.html';
-            return;
+        } else {
+            // Student stays on index.html
+            updateUIAfterLogin();
+            closeModal('loginModal');
+            showPage('search');
+            showNotification('Login sebagai student berhasil!', 'success');
+            document.getElementById('demo-badge').style.display = 'block';
+            loadTutors();
         }
-        
-        // Student continues with normal flow
-        updateUIAfterLogin();
-        closeModal('loginModal');
-        showPage('search');
-        showNotification(`Login sebagai ${type} berhasil!`, 'success');
-        document.getElementById('demo-badge').style.display = 'block';
-        loadTutors();
     } else {
         showNotification(result.message, 'error');
     }
@@ -252,7 +262,8 @@ async function handleLogin(e) {
     const email = formData.get('email');
     const password = formData.get('password');
     
-    if (!email.endsWith('.ac.id')) {
+    // Allow admin email without .ac.id validation
+    if (!email.includes('@tutorhub.com') && !email.endsWith('.ac.id')) {
         showNotification('Email harus menggunakan domain universitas (.ac.id)', 'error');
         return;
     }
@@ -265,19 +276,20 @@ async function handleLogin(e) {
     if (result.success) {
         currentUser = result.user;
         
-        // Redirect tutor to dashboard
-        if (currentUser.type === 'tutor') {
+        // Redirect based on user type
+        if (currentUser.type === 'admin') {
+            window.location.href = 'admin.html';
+        } else if (currentUser.type === 'tutor') {
             window.location.href = 'dashboard.html';
-            return;
+        } else {
+            // Student stays on index.html
+            updateUIAfterLogin();
+            closeModal('loginModal');
+            showPage('search');
+            showNotification('Login berhasil! Selamat datang, ' + currentUser.name + ' ', 'success');
+            document.getElementById('demo-badge').style.display = 'block';
+            loadTutors();
         }
-        
-        // Student continues with normal flow
-        updateUIAfterLogin();
-        closeModal('loginModal');
-        showPage('search');
-        showNotification('Login berhasil! Selamat datang, ' + currentUser.name + ' ', 'success');
-        document.getElementById('demo-badge').style.display = 'block';
-        loadTutors();
     } else {
         showNotification(result.message, 'error');
     }

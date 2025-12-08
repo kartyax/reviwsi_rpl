@@ -147,11 +147,14 @@ INSERT INTO tutors (name, university, subject, lecturer, rating, reviews, sessio
 ('Budi Hartono', 'UGM', 'Basis Data', 'Dr. Citra Dewi, M.Math', 4.7, 34, 95, 70000, 'https://ui-avatars.com/api/?name=Budi+Hartono&size=120&background=random', 'Ex-Asisten Dosen dengan pengalaman 3 tahun. Detail oriented dan sabar membimbing dari basic hingga advanced level.'),
 ('Dewi Lestari', 'ITS', 'Struktur Data', 'Prof. Dewi Sartika, Ph.D', 4.6, 52, 140, 85000, 'https://ui-avatars.com/api/?name=Dewi+Lestari&size=120&background=random', 'Sangat passionate dalam mengajar. Success rate 95% mahasiswa mendapat nilai A/B. Flexible dengan jadwal.');
 
--- Insert demo users (with admin)
+-- Insert demo users (with admin) - Password: 'password'
 INSERT INTO users (name, email, password, nim, university, type, avatar, bio, verified, verification_status) VALUES
 ('Budi Santoso', 'budi@ui.ac.id', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '1906123456', 'Universitas Indonesia', 'student', 'https://ui-avatars.com/api/?name=Budi+Santoso&size=150&background=4F46E5&color=fff', NULL, TRUE, 'approved'),
 ('Anisa Putri', 'anisa@ui.ac.id', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '1806123456', 'Universitas Indonesia', 'tutor', 'https://ui-avatars.com/api/?name=Anisa+Putri&size=150&background=10b981&color=fff', 'Tutor berpengalaman di bidang Pemrograman Web', TRUE, 'approved'),
-('Admin TutorHub', 'admin@tutorhub.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'ADMIN001', 'TutorHub', 'admin', 'https://ui-avatars.com/api/?name=Admin&size=150&background=dc2626&color=fff', 'Administrator TutorHub', TRUE, 'approved');
+('Admin TutorHub', 'admin@tutorhub.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'ADMIN001', 'TutorHub', 'admin', 'https://ui-avatars.com/api/?name=Admin&size=150&background=dc2626&color=fff', 'Administrator TutorHub', TRUE, 'approved')
+ON DUPLICATE KEY UPDATE email=email;
+
+-- Note: Password hash untuk 'password' adalah: $2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi
 
 -- Update tutors table with user_id and bank info
 UPDATE tutors SET user_id = 2, verified = TRUE, bank_name = 'BCA', bank_account = '1234567890', bank_holder = 'Anisa Putri' WHERE id = 1;

@@ -38,7 +38,11 @@ function login() {
     $email = $data['email'] ?? '';
     $password = $data['password'] ?? '';
     
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL) || !str_ends_with($email, '.ac.id')) {
+    // Validasi email - allow admin email
+    $isAdmin = strpos($email, '@tutorhub.com') !== false;
+    $isUniversity = substr($email, -6) === '.ac.id';
+    
+    if (!$isAdmin && !$isUniversity) {
         echo json_encode([
             'success' => false,
             'message' => 'Email harus menggunakan domain universitas (.ac.id)'
@@ -61,33 +65,42 @@ function login() {
             'user' => $user
         ]);
     } else {
-        // For demo: create user if not exists
-        $name = explode('@', $email)[0];
-        $name = ucwords(str_replace('.', ' ', $name));
-        $nim = '19' . rand(10000000, 99999999);
-        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-        $avatar = "https://ui-avatars.com/api/?name=" . urlencode($name) . "&size=150&background=random";
-        
-        $stmt = $conn->prepare("INSERT INTO users (name, email, password, nim, university, type, avatar) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        $stmt->execute([$name, $email, $hashedPassword, $nim, 'Universitas Indonesia', 'student', $avatar]);
-        
-        $user = [
-            'id' => $conn->lastInsertId(),
-            'name' => $name,
-            'email' => $email,
-            'nim' => $nim,
-            'university' => 'Universitas Indonesia',
-            'type' => 'student',
-            'avatar' => $avatar
-        ];
-        
-        $_SESSION['user'] = $user;
-        
-        echo json_encode([
-            'success' => true,
-            'message' => 'Login berhasil',
-            'user' => $user
-        ]);
+        // For demo: create user if not exists (ONLY for .ac.id emails)
+        if (!$isAdmin && $isUniversity) {
+            $name = explode('@', $email)[0];
+            $name = ucwords(str_replace('.', ' ', $name));
+            $nim = '19' . rand(10000000, 99999999);
+            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+            $avatar = "https://ui-avatars.com/api/?name=" . urlencode($name) . "&size=150&background=random";
+            
+            $stmt = $conn->prepare("INSERT INTO users (name, email, password, nim, university, type, avatar, verified, verification_status) VALUES (?, ?, ?, ?, ?, ?, ?, TRUE, 'approved')");
+            $stmt->execute([$name, $email, $hashedPassword, $nim, 'Universitas Indonesia', 'student', $avatar]);
+            
+            $user = [
+                'id' => $conn->lastInsertId(),
+                'name' => $name,
+                'email' => $email,
+                'nim' => $nim,
+                'university' => 'Universitas Indonesia',
+                'type' => 'student',
+                'avatar' => $avatar,
+                'verified' => true,
+                'verification_status' => 'approved'
+            ];
+            
+            $_SESSION['user'] = $user;
+            
+            echo json_encode([
+                'success' => true,
+                'message' => 'Login berhasil',
+                'user' => $user
+            ]);
+        } else {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Email atau password salah'
+            ]);
+        }
     }
 }
 
@@ -197,7 +210,7 @@ function quickLogin() {
     } else {
         echo json_encode([
             'success' => false,
-            'message' => 'Demo user not foundd'
+            'message' => 'Demo user not found'
         ]);
     }
 }
