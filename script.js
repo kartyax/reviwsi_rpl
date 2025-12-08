@@ -117,7 +117,7 @@ async function loadProfileStats() {
             const statsContainer = document.querySelector('.card-body .row.text-center');
             if (statsContainer && !document.getElementById('stats-earnings')) {
                 const earningsCol = document.createElement('div');
-                earningsCol.className = 'col-md-4';
+                earningsCol.className = 'col-md-3';
                 earningsCol.innerHTML = `
                     <h3 class="text-success" id="stats-earnings">Rp ${result.stats.earnings.toLocaleString('id-ID')}</h3>
                     <p class="text-muted">Total Pendapatan</p>
@@ -351,7 +351,6 @@ function updateUIAfterLogin() {
     updateUserTypeBadge();
 }
 
-
 // ===================================================
 // LOGOUT
 // ===================================================
@@ -507,7 +506,7 @@ async function handleBooking(e) {
     const startTime = formData.get('start_time');
     const duration = parseFloat(formData.get('duration'));
     const method = formData.get('method');
-    const notes = formData.get('notes');
+    const notes = formData.get('notes') || '';
     const paymentMethod = formData.get('payment_method');
     
     const bookingDate = new Date(startTime);
@@ -516,27 +515,47 @@ async function handleBooking(e) {
         return;
     }
     
-    const result = await apiRequest('sessions.php?action=create', {
-        method: 'POST',
-        body: JSON.stringify({
-            tutor_id: tutorId,
-            start_time: startTime,
-            duration,
-            method,
-            notes,
-            payment_method: paymentMethod
-        })
-    });
+    // Validate fields
+    if (!tutorId || !startTime) {
+        showNotification('Lengkapi semua data booking', 'error');
+        return;
+    }
     
-    if (result.success) {
-        closeModal('bookingModal');
-        showNotification('Booking berhasil! Menunggu konfirmasi tutor. 🎉', 'success');
+    const bookingData = {
+        tutor_id: parseInt(tutorId),
+        start_time: startTime,
+        duration: duration,
+        method: method,
+        notes: notes,
+        payment_method: paymentMethod
+    };
+    
+    console.log('Booking data:', bookingData); // Debug
+    
+    try {
+        const result = await apiRequest('sessions.php?action=create', {
+            method: 'POST',
+            body: JSON.stringify(bookingData)
+        });
         
-        setTimeout(() => {
-            showPage('sessions');
-        }, 1000);
-    } else {
-        showNotification(result.message, 'error');
+        console.log('Booking result:', result); // Debug
+        
+        if (result.success) {
+            closeModal('bookingModal');
+            showNotification('Booking berhasil! Menunggu konfirmasi tutor. 🎉', 'success');
+            
+            setTimeout(() => {
+                showPage('sessions');
+            }, 1000);
+        } else {
+            showNotification(result.message || 'Booking gagal', 'error');
+            if (result.debug) {
+                console.error('Debug info:', result.debug);
+            }
+        }
+    } catch (error) {
+        console.error('Booking error:', error);
+        showNotification('Terjadi kesalahan saat booking', 'error');
     }
 }
 
@@ -785,7 +804,7 @@ async function sortTutors() {
 }
 
 // ===================================================
-// USER PROFILE FUNCTIONS
+// PROFILE FUNCTIONS
 // ===================================================
 async function handleEditProfile(e) {
     e.preventDefault();
@@ -916,8 +935,8 @@ function startTour() {
         showBullets: false,
         exitOnOverlayClick: false,
         doneLabel: 'Selesai',
-        nextLabel: 'Lanjut',
-        prevLabel: 'Kembali'
+        nextLabel: 'Lanjut →',
+        prevLabel: '← Kembali'
     });
     
     intro.oncomplete(function() {
@@ -950,8 +969,8 @@ function startTour() {
                         }
                     ],
                     doneLabel: 'Mengerti!',
-                    nextLabel: 'Lanjut',
-                    prevLabel: 'Kembali'
+                    nextLabel: 'Lanjut →',
+                    prevLabel: '← Kembali'
                 });
                 searchTour.start();
             }, 500);
@@ -972,10 +991,10 @@ function updateUserTypeBadge() {
     // Add badge to demo badge
     const demoBadge = document.getElementById('demo-badge');
     if (currentUser && currentUser.type === 'tutor') {
-        demoBadge.innerHTML = '<i class="fas fa-chalkboard-teacher"></i> TUTOR';
+        demoBadge.innerHTML = '<i class="fas fa-chalkboard-teacher"></i> TUTOR MODE';
         demoBadge.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
     } else {
-        demoBadge.innerHTML = '<i class="fas fa-user-graduate"></i> STUDENT';
+        demoBadge.innerHTML = '<i class="fas fa-user-graduate"></i> STUDENT MODE';
         demoBadge.style.background = 'linear-gradient(135deg, #4F46E5 0%, #4338CA 100%)';
     }
 }
