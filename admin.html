@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - TutorHub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --admin-primary: #dc2626;
+            --admin-secondary: #991b1b;
+            --sidebar-width: 260px;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f8fafc;
+        }
+        
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--admin-primary) 0%, var(--admin-secondary) 100%);
+            padding: 20px 0;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+        
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.3);
+            border-radius: 3px;
+        }
+        
+        .logo {
+            padding: 0 20px 20px;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .admin-info {
+            padding: 15px 20px;
+            color: white;
+            background: rgba(0,0,0,0.2);
+            margin: 0 10px 20px;
+            border-radius: 10px;
+        }
+        
+        .nav-menu {
+            padding: 0 10px;
+        }
+        
+        .nav-item {
+            margin-bottom: 5px;
+        }
+        
+        .nav-link {
+            color: rgba(255,255,255,0.8);
+            padding: 12px 15px;
+            border-radius: 8px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+        
+        .nav-link:hover,
+        .nav-link.active {
+            background: rgba(255,255,255,0.15);
+            color: white;
+        }
+        
+        .nav-link i {
+            width: 24px;
+            margin-right: 10px;
+        }
+        
+        .badge-notify {
+            margin-left: auto;
+            background: #fbbf24;
+            color: #78350f;
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+        
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 30px;
+            min-height: 100vh;
+        }
+        
+        .topbar {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border-left: 4px solid;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .stat-card.primary { border-left-color: #3b82f6; }
+        .stat-card.success { border-left-color: #10b981; }
+        .stat-card.warning { border-left-color: #f59e0b; }
+        .stat-card.danger { border-left-color: #ef4444; }
+        .stat-card.info { border-left-color: #06b6d4; }
+        
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .table-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .table {
+            margin-bottom: 0;
+        }
+        
+        .table thead {
+            background: #f8fafc;
+        }
+        
+        .btn-action {
+            padding: 5px 12px;
+            font-size: 0.875rem;
+            border-radius: 6px;
+        }
+        
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-approved { background: #d1fae5; color: #065f46; }
+        .status-rejected { background: #fee2e2; color: #991b1b; }
+        .status-held { background: #dbeafe; color: #1e40af; }
+        .status-released { background: #d1fae5; color: #065f46; }
+        .status-refunded { background: #fee2e2; color: #991b1b; }
+        
+        .view-content {
+            display: none;
+        }
+        
+        .view-content.active {
+            display: block;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+            }
+            .main-content {
+                margin-left: 70px;
+            }
+            .nav-link span {
+                display: none;
+            }
+            .admin-info {
+                padding: 10px;
+            }
+            .admin-info .admin-name,
+            .admin-info .admin-role {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">
+            <i class="fas fa-shield-alt"></i> TutorHub Admin
+        </div>
+        
+        <div class="admin-info">
+            <div class="d-flex align-items-center">
+                <img src="https://ui-avatars.com/api/?name=Admin&size=50&background=fff&color=dc2626" class="rounded-circle me-2" alt="Admin" id="admin-avatar" width="40" height="40">
+                <div>
+                    <div class="fw-bold admin-name" id="admin-name">Admin</div>
+                    <small class="opacity-75 admin-role">Super Admin</small>
+                </div>
+            </div>
+        </div>
+        
+        <nav class="nav-menu">
+            <div class="nav-item">
+                <a class="nav-link active" href="#" onclick="showView('dashboard'); return false;">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a class="nav-link" href="#" onclick="showView('tutors'); return false;">
+                    <i class="fas fa-user-check"></i>
+                    <span>Verifikasi Tutor</span>
+                    <span class="badge-notify" id="pending-tutors-badge">0</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a class="nav-link" href="#" onclick="showView('users'); return false;">
+                    <i class="fas fa-users"></i>
+                    <span>Kelola User</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a class="nav-link" href="#" onclick="showView('sessions'); return false;">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>Sesi</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a class="nav-link" href="#" onclick="showView('transactions'); return false;">
+                    <i class="fas fa-credit-card"></i>
+                    <span>Transaksi Escrow</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a class="nav-link" href="#" onclick="showView('withdrawals'); return false;">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span>Withdrawal</span>
+                    <span class="badge-notify" id="pending-withdrawals-badge">0</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a class="nav-link" href="#" onclick="showView('reports'); return false;">
+                    <i class="fas fa-flag"></i>
+                    <span>Reports</span>
+                    <span class="badge-notify" id="pending-reports-badge">0</span>
+                </a>
+            </div>
+            <hr style="border-color: rgba(255,255,255,0.2); margin: 20px 10px;">
+            <div class="nav-item">
+                <a class="nav-link" href="#" onclick="logout(); return false;">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Topbar -->
+        <div class="topbar">
+            <div>
+                <h4 class="mb-0" id="page-title">Dashboard</h4>
+                <small class="text-muted" id="page-subtitle">Overview sistem TutorHub</small>
+            </div>
+            <div>
+                <button class="btn btn-outline-primary btn-sm" onclick="refreshData()">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+        </div>
+
+        <!-- Dashboard View -->
+        <div id="dashboard-view" class="view-content active">
+            <!-- Stats Cards -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-3">
+                    <div class="stat-card primary">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <small class="text-muted d-block mb-1">Total Users</small>
+                                <h3 class="mb-0" id="stat-users">0</h3>
+                            </div>
+                            <div class="stat-icon bg-primary bg-opacity-10 text-primary">
+                                <i class="fas fa-users"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card success">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <small class="text-muted d-block mb-1">Total Tutors</small>
+                                <h3 class="mb-0" id="stat-tutors">0</h3>
+                            </div>
+                            <div class="stat-icon bg-success bg-opacity-10 text-success">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card warning">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <small class="text-muted d-block mb-1">Pending Verifikasi</small>
+                                <h3 class="mb-0 text-warning" id="stat-pending">0</h3>
+                            </div>
+                            <div class="stat-icon bg-warning bg-opacity-10 text-warning">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card info">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <small class="text-muted d-block mb-1">Total Sesi</small>
+                                <h3 class="mb-0 text-info" id="stat-sessions">0</h3>
+                            </div>
+                            <div class="stat-icon bg-info bg-opacity-10 text-info">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Revenue Stats -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <div class="stat-card success">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <small class="text-muted d-block mb-1">Total Revenue</small>
+                                <h4 class="mb-0 text-success" id="stat-revenue">Rp 0</h4>
+                            </div>
+                            <div class="stat-icon bg-success bg-opacity-10 text-success">
+                                <i class="fas fa-dollar-sign"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card primary">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <small class="text-muted d-block mb-1">Admin Fees</small>
+                                <h4 class="mb-0 text-primary" id="stat-fees">Rp 0</h4>
+                            </div>
+                            <div class="stat-icon bg-primary bg-opacity-10 text-primary">
+                                <i class="fas fa-percentage"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card warning">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <small class="text-muted d-block mb-1">Escrow Balance</small>
+                                <h4 class="mb-0 text-warning" id="stat-escrow">Rp 0</h4>
+                            </div>
+                            <div class="stat-icon bg-warning bg-opacity-10 text-warning">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-white py-3">
+                            <h5 class="mb-0">Aktivitas Terbaru</h5>
+                        </div>
+                        <div class="card-body" id="recent-activity">
+                            <p class="text-muted text-center py-4">Memuat data...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tutors Verification View -->
+        <div id="tutors-view" class="view-content">
+            <div class="table-card">
+                <div class="card-header bg-white py-3 px-4">
+                    <h5 class="mb-0">Pending Tutor Verifications</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0" id="tutors-table">
+                            <thead>
+                                <tr>
+                                    <th>Tutor</th>
+                                    <th>Email</th>
+                                    <th>Universitas</th>
+                                    <th>Mata Kuliah</th>
+                                    <th>Harga</th>
+                                    <th>Tanggal Daftar</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Users View -->
+        <div id="users-view" class="view-content">
+            <div class="table-card">
+                <div class="card-header bg-white py-3 px-4">
+                    <h5 class="mb-0">Semua Users</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0" id="users-table">
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Email</th>
+                                    <th>Universitas</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Bergabung</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sessions View -->
+        <div id="sessions-view" class="view-content">
+            <div class="table-card">
+                <div class="card-header bg-white py-3 px-4">
+                    <h5 class="mb-0">Semua Sesi</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0" id="sessions-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Student</th>
+                                    <th>Tutor</th>
+                                    <th>Tanggal</th>
+                                    <th>Durasi</th>
+                                    <th>Harga</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Transactions View -->
+        <div id="transactions-view" class="view-content">
+            <div class="table-card">
+                <div class="card-header bg-white py-3 px-4">
+                    <h5 class="mb-0">Transaksi & Escrow Management</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0" id="transactions-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Student</th>
+                                    <th>Tutor</th>
+                                    <th>Amount</th>
+                                    <th>Admin Fee</th>
+                                    <th>Tutor Amount</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Withdrawals View -->
+        <div id="withdrawals-view" class="view-content">
+            <div class="table-card">
+                <div class="card-header bg-white py-3 px-4">
+                    <h5 class="mb-0">Pending Withdrawal Requests</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0" id="withdrawals-table">
+                            <thead>
+                                <tr>
+                                    <th>Tutor</th>
+                                    <th>Amount</th>
+                                    <th>Bank Info</th>
+                                    <th>Request Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reports View -->
+        <div id="reports-view" class="view-content">
+            <div class="table-card">
+                <div class="card-header bg-white py-3 px-4">
+                    <h5 class="mb-0">Pending Reports</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0" id="reports-table">
+                            <thead>
+                                <tr>
+                                    <th>Reporter</th>
+                                    <th>Reported User</th>
+                                    <th>Type</th>
+                                    <th>Reason</th>
+                                    <th>Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>
