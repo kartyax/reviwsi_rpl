@@ -197,7 +197,7 @@ function quickLogin() {
     } else {
         echo json_encode([
             'success' => false,
-            'message' => 'Demo user not found'
+            'message' => 'Demo user not foundd'
         ]);
     }
 }
