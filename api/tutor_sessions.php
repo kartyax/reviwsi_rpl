@@ -1,7 +1,14 @@
 <?php
 require_once '../config.php';
 
-$action = $_GET['action'] ?? '';
+// Get action from both GET and POST
+$action = $_GET['action'] ?? $_POST['action'] ?? '';
+
+// Handle OPTIONS request for CORS
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
 
 switch($action) {
     case 'list':
@@ -20,7 +27,10 @@ switch($action) {
         getTutorStats();
         break;
     default:
-        echo json_encode(['success' => false, 'message' => 'Invalid action']);
+        echo json_encode([
+            'success' => false, 
+            'message' => 'Invalid action: ' . $action
+        ]);
 }
 
 function getTutorSessions() {

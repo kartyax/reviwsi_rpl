@@ -9,8 +9,8 @@ const API_URL = 'api/';
 document.addEventListener('DOMContentLoaded', function() {
     console.log('TutorHub initialized (Dynamic Mode with PHP Backend)...');
     
-    // Check authentication
-    checkAuth();
+    // Check authentication first, then load appropriate page
+    checkAuthAndInitialize();
     
     // Form handlers
     document.getElementById('loginForm').addEventListener('submit', handleLogin);
@@ -63,7 +63,31 @@ async function checkAuth() {
         updateUIAfterLogin();
         document.getElementById('demo-badge').style.display = 'block';
         loadTutors();
+        return true;
     } else {
+        loadTutors();
+        return false;
+    }
+}
+
+async function checkAuthAndInitialize() {
+    const result = await apiRequest('auth.php?action=check');
+    if (result.success && result.authenticated) {
+        currentUser = result.user;
+        updateUIAfterLogin();
+        document.getElementById('demo-badge').style.display = 'block';
+        
+        // Redirect to appropriate page based on user type
+        if (currentUser.type === 'tutor') {
+            showPage('sessions'); // Tutor goes to "Jadwal Mengajar"
+        } else {
+            showPage('search'); // Student goes to "Cari Tutor"
+        }
+        
+        loadTutors();
+    } else {
+        // Not logged in, stay on landing page
+        showPage('landing');
         loadTutors();
     }
 }
@@ -200,7 +224,14 @@ async function quickLogin(type) {
         currentUser = result.user;
         updateUIAfterLogin();
         closeModal('loginModal');
-        showPage('search');
+        
+        // Redirect based on user type
+        if (type === 'tutor') {
+            showPage('sessions');
+        } else {
+            showPage('search');
+        }
+        
         showNotification(`Login sebagai ${type} berhasil!`, 'success');
         document.getElementById('demo-badge').style.display = 'block';
         loadTutors();
@@ -233,7 +264,14 @@ async function handleLogin(e) {
         currentUser = result.user;
         updateUIAfterLogin();
         closeModal('loginModal');
-        showPage('search');
+        
+        // Redirect based on user type
+        if (currentUser.type === 'tutor') {
+            showPage('sessions');
+        } else {
+            showPage('search');
+        }
+        
         showNotification('Login berhasil! Selamat datang, ' + currentUser.name + ' ', 'success');
         document.getElementById('demo-badge').style.display = 'block';
         loadTutors();

@@ -1,7 +1,14 @@
 <?php
 require_once '../config.php';
 
-$action = $_GET['action'] ?? '';
+// Get action from both GET and POST
+$action = $_GET['action'] ?? $_POST['action'] ?? '';
+
+// Handle OPTIONS request for CORS
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
 
 switch($action) {
     case 'login':
@@ -20,7 +27,10 @@ switch($action) {
         quickLogin();
         break;
     default:
-        echo json_encode(['success' => false, 'message' => 'Invalid action']);
+        echo json_encode([
+            'success' => false, 
+            'message' => 'Invalid action: ' . $action
+        ]);
 }
 
 function login() {
@@ -136,31 +146,6 @@ function register() {
     
     $stmt = $conn->prepare("INSERT INTO users (name, email, password, nim, university, type, avatar) VALUES (?, ?, ?, ?, ?, ?, ?)");
     $stmt->execute([$name, $email, $hashedPassword, $nim, $university, $role, $avatar]);
-    
-    // ========================================
-    // SOLUSI: Jika registrasi sebagai tutor, buat entri di tabel tutors
-    // ========================================
-    if ($role === 'tutor') {
-        // Default values untuk tutor baru
-        $defaultSubject = 'Umum'; // Bisa diupdate nanti oleh tutor
-        $defaultLecturer = 'Belum diset'; // Tutor bisa update nanti
-        $defaultPrice = 75000; // Harga default Rp 75.000
-        $defaultBio = 'Tutor berpengalaman siap membantu pembelajaran Anda.';
-        
-        $stmt = $conn->prepare("
-            INSERT INTO tutors (name, university, subject, lecturer, rating, reviews, sessions_completed, price, avatar, bio) 
-            VALUES (?, ?, ?, ?, 0.0, 0, 0, ?, ?, ?)
-        ");
-        $stmt->execute([
-            $name,
-            $university,
-            $defaultSubject,
-            $defaultLecturer,
-            $defaultPrice,
-            $avatar,
-            $defaultBio
-        ]);
-    }
     
     echo json_encode([
         'success' => true,
