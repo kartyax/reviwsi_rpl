@@ -10,9 +10,12 @@ CREATE TABLE users (
     password VARCHAR(255) NOT NULL,
     nim VARCHAR(50) NOT NULL,
     university VARCHAR(255) NOT NULL,
-    type ENUM('student', 'tutor') DEFAULT 'student',
+    type ENUM('student', 'tutor', 'admin') DEFAULT 'student',
     avatar VARCHAR(500),
     bio TEXT,
+    verified BOOLEAN DEFAULT FALSE,
+    verification_status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
+    verification_documents TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -20,6 +23,7 @@ CREATE TABLE users (
 -- Table: tutors
 CREATE TABLE tutors (
     id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT,
     name VARCHAR(255) NOT NULL,
     university VARCHAR(255) NOT NULL,
     subject VARCHAR(255) NOT NULL,
@@ -30,8 +34,13 @@ CREATE TABLE tutors (
     price INT NOT NULL,
     avatar VARCHAR(500),
     bio TEXT,
+    verified BOOLEAN DEFAULT FALSE,
+    bank_name VARCHAR(100),
+    bank_account VARCHAR(50),
+    bank_holder VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 -- Table: sessions
@@ -42,14 +51,58 @@ CREATE TABLE sessions (
     date DATETIME NOT NULL,
     duration DECIMAL(3,1) NOT NULL,
     method ENUM('online', 'offline') NOT NULL,
-    status ENUM('pending', 'confirmed', 'completed', 'cancelled') DEFAULT 'pending',
+    status ENUM('pending', 'confirmed', 'completed', 'cancelled', 'refunded') DEFAULT 'pending',
     notes TEXT,
     price INT NOT NULL,
     payment_method VARCHAR(50),
+    payment_status ENUM('pending', 'held', 'released', 'refunded') DEFAULT 'pending',
+    escrow_id VARCHAR(100),
+    admin_fee INT DEFAULT 0,
+    tutor_payout INT DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (tutor_id) REFERENCES tutors(id) ON DELETE CASCADE
+);
+
+-- Table: transactions (Escrow System)
+CREATE TABLE transactions (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    session_id INT NOT NULL,
+    user_id INT NOT NULL,
+    tutor_id INT NOT NULL,
+    amount INT NOT NULL,
+    admin_fee INT NOT NULL,
+    tutor_amount INT NOT NULL,
+    status ENUM('pending', 'held', 'released', 'refunded') DEFAULT 'pending',
+    payment_method VARCHAR(50),
+    payment_proof VARCHAR(500),
+    escrow_held_at TIMESTAMP NULL,
+    escrow_released_at TIMESTAMP NULL,
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (tutor_id) REFERENCES tutors(id) ON DELETE CASCADE
+);
+
+-- Table: withdrawals (Tutor Withdrawal Requests)
+CREATE TABLE withdrawals (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    tutor_id INT NOT NULL,
+    amount INT NOT NULL,
+    bank_name VARCHAR(100) NOT NULL,
+    bank_account VARCHAR(50) NOT NULL,
+    bank_holder VARCHAR(255) NOT NULL,
+    status ENUM('pending', 'processing', 'completed', 'rejected') DEFAULT 'pending',
+    processed_by INT NULL,
+    processed_at TIMESTAMP NULL,
+    rejection_reason TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (tutor_id) REFERENCES tutors(id) ON DELETE CASCADE,
+    FOREIGN KEY (processed_by) REFERENCES users(id) ON DELETE SET NULL
 );
 
 -- Table: reviews
@@ -64,6 +117,27 @@ CREATE TABLE reviews (
     FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (tutor_id) REFERENCES tutors(id) ON DELETE CASCADE
+);
+
+-- Table: reports (Report System)
+CREATE TABLE reports (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    reporter_id INT NOT NULL,
+    reported_id INT NOT NULL,
+    session_id INT NULL,
+    type ENUM('user', 'session', 'content') NOT NULL,
+    reason VARCHAR(255) NOT NULL,
+    description TEXT,
+    status ENUM('pending', 'investigating', 'resolved', 'rejected') DEFAULT 'pending',
+    resolved_by INT NULL,
+    resolved_at TIMESTAMP NULL,
+    resolution_notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (reporter_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (reported_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE SET NULL,
+    FOREIGN KEY (resolved_by) REFERENCES users(id) ON DELETE SET NULL
 );
 
 -- Insert dummy tutors data
