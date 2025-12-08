@@ -74,16 +74,17 @@ async function checkAuthAndInitialize() {
     const result = await apiRequest('auth.php?action=check');
     if (result.success && result.authenticated) {
         currentUser = result.user;
-        updateUIAfterLogin();
-        document.getElementById('demo-badge').style.display = 'block';
         
-        // Redirect to appropriate page based on user type
+        // Redirect tutor to dashboard
         if (currentUser.type === 'tutor') {
-            showPage('sessions'); // Tutor goes to "Jadwal Mengajar"
-        } else {
-            showPage('search'); // Student goes to "Cari Tutor"
+            window.location.href = 'dashboard.html';
+            return;
         }
         
+        // Student continues with normal flow
+        updateUIAfterLogin();
+        document.getElementById('demo-badge').style.display = 'block';
+        showPage('search');
         loadTutors();
     } else {
         // Not logged in, stay on landing page
@@ -222,16 +223,17 @@ async function quickLogin(type) {
     
     if (result.success) {
         currentUser = result.user;
-        updateUIAfterLogin();
-        closeModal('loginModal');
         
-        // Redirect based on user type
+        // Redirect tutor to dashboard
         if (type === 'tutor') {
-            showPage('sessions');
-        } else {
-            showPage('search');
+            window.location.href = 'dashboard.html';
+            return;
         }
         
+        // Student continues with normal flow
+        updateUIAfterLogin();
+        closeModal('loginModal');
+        showPage('search');
         showNotification(`Login sebagai ${type} berhasil!`, 'success');
         document.getElementById('demo-badge').style.display = 'block';
         loadTutors();
@@ -262,16 +264,17 @@ async function handleLogin(e) {
     
     if (result.success) {
         currentUser = result.user;
-        updateUIAfterLogin();
-        closeModal('loginModal');
         
-        // Redirect based on user type
+        // Redirect tutor to dashboard
         if (currentUser.type === 'tutor') {
-            showPage('sessions');
-        } else {
-            showPage('search');
+            window.location.href = 'dashboard.html';
+            return;
         }
         
+        // Student continues with normal flow
+        updateUIAfterLogin();
+        closeModal('loginModal');
+        showPage('search');
         showNotification('Login berhasil! Selamat datang, ' + currentUser.name + ' ', 'success');
         document.getElementById('demo-badge').style.display = 'block';
         loadTutors();
@@ -955,6 +958,12 @@ function viewSessionDetail(sessionId) {
 // DEMO TOUR
 // ===================================================
 function startTour() {
+    // Check if user is tutor - don't show tour
+    if (currentUser && currentUser.type === 'tutor') {
+        showNotification('Demo tour tidak tersedia untuk tutor. Silakan eksplorasi dashboard!', 'info');
+        return;
+    }
+    
     const intro = introJs();
     intro.setOptions({
         steps: [
